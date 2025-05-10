@@ -1,15 +1,7 @@
 import nltk
 
-# Download necessary NLTK data if not already present
-try:
-    nltk.data.find('tokenizers/punkt')
-except nltk.downloader.DownloadError:
-    nltk.download('punkt')
-try:
-    nltk.data.find('taggers/averaged_perceptron_tagger')
-except nltk.downloader.DownloadError:
-    nltk.download('averaged_perceptron_tagger')
-
+nltk.download('punkt_tab')
+nltk.download('averaged_perceptron_tagger_eng')
 
 COMMON_WORDS_EXCLUSION_SET = {
     "The", "Is", "And", "Or", "But", "A", "An", "Of", "To", "In", "On", "At", "For", "With", "By", "From",
