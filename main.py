@@ -1,4 +1,4 @@
-import PlaceFinder.PlaceFinder as PlaceFinder
+import PlaceFinder
 
 paragraph = """
 Malaysia is a federal constitutional monarchy located in Southeast Asia. It consists of thirteen states
