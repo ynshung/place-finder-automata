@@ -32,7 +32,7 @@ if st.button("Find Places"):
         else:
             st.write("No place candidates found.")
 
-        with st.expander("View Part-of-Speech Tags"):
+        with st.expander("View Part-of-Speech Tags", expanded=True):
             st.subheader("Part-of-Speech Tags") # Updated subheader
             for i, line_tags in enumerate(pos_tags_lines):
                 if line_tags:
@@ -58,7 +58,7 @@ if st.button("Find Places"):
             st.json([{"line_number": i+1, "tags": tags} for i, tags in enumerate(pos_tags_lines)], expanded=False)
 
 
-        with st.expander("View DFA State Transitions Log"):
+        with st.expander("View DFA State Transitions Log", expanded=True):
             st.subheader("DFA Processing Log")
             
             # Filter logs for token processing and state changes
