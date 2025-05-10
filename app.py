@@ -79,22 +79,23 @@ if st.button("Find Places"):
         with st.expander("View DFA State Transitions Log", expanded=True):
             st.subheader("DFA Processing Log")
             
-            # Filter logs for token processing and state changes
+            # Filter logs for character processing and state changes
+            # Adapt this to match the new log format from character-based DFA
             transition_logs = [
                 log for log in logs 
-                if "token" in log and "prev_state" in log and "new_state" in log and "action" in log
+                if "char" in log and "prev_state" in log and "new_state" in log and "action" in log
             ]
             
             if transition_logs:
                 # Convert to DataFrame for better display
                 df_transitions = pd.DataFrame(transition_logs)
                 # Select and reorder columns for clarity
-                df_display = df_transitions[["token", "tag", "prev_state", "action", "new_state", "buffer_after_action"]]
-                df_display.columns = ["Token", "POS Tag", "Previous State", "Action/Details", "New State", "Buffer Content"]
-                st.dataframe(df_display, use_container_width=True) # Set use_container_width to True
+                df_display = df_transitions[["char", "prev_state", "action", "new_state", "buffer", "word_buffer"]]
+                df_display.columns = ["Character", "Previous State", "Action/Details", "New State", "Current Buffer", "Word Buffer"]
+                st.dataframe(df_display, use_container_width=True)
             else:
                 st.write("No detailed DFA transition logs available (or logs are not in the expected format).")
-
+        
             st.caption("Full Raw Logs (for debugging):")
             st.json(logs)
         
