@@ -2,6 +2,7 @@ import streamlit as st
 from PlaceFinder import PlaceFinder # Assuming PlaceFinder.py is in the same directory
 import pandas as pd # Import pandas for DataFrame
 from annotated_text import annotated_text # Import annotated_text
+import re # Import re for regex replacement
 
 # Set page config to wide layout
 st.set_page_config(layout="wide")
@@ -26,6 +27,23 @@ if st.button("Find Places"):
 
         st.header("Results")
         if results:
+            # Add highlighted text section
+            st.subheader("Text with Identified Places:")
+            highlighted_text = text_input
+            # Sort places by length (longest first) to handle overlapping matches correctly
+            sorted_places = sorted(results.keys(), key=len, reverse=True)
+            for place in sorted_places:
+                # Escape special regex characters in the place name
+                place_escaped = re.escape(place)
+                # Replace each occurrence with bold version
+                highlighted_text = re.sub(
+                    f'({place_escaped})', 
+                    r'**\1**', 
+                    highlighted_text, 
+                    flags=re.IGNORECASE
+                )
+            st.markdown(highlighted_text)     
+                   
             st.subheader("Identified Place Candidates & Counts:")
             for place, count in results.items():
                 st.write(f"- **{place}**: {count}")
