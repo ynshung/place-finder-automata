@@ -58,7 +58,15 @@ with open("output.txt", "w", encoding="utf-8") as output_file:
                 output_file.write("POS Tags (line by line):\n")
                 for line_tags in log_entry['tags_by_line']:
                     if line_tags:
-                        tagged_sentence = " ".join([f"{token} ({tag})" for token, tag in line_tags])
+                        # Apply symbol exclusion for POS tagging
+                        formatted_parts = []
+                        for token, tag in line_tags:
+                            # Define symbols that should not be tagged
+                            if token in ['.', ',', '(', ')', '[', ']', '{', '}', ':', ';', '"', "'", '!', '?', '-', '--']:
+                                formatted_parts.append(token)
+                            else:
+                                formatted_parts.append(f"{token} ({tag})")
+                        tagged_sentence = " ".join(formatted_parts)
                         output_file.write(f"  {tagged_sentence}\n")
                     else:
                         output_file.write("\n") # Preserve empty lines
