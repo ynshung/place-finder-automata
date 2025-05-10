@@ -1,5 +1,5 @@
 import streamlit as st
-from PlaceFinder import PlaceFinder # Assuming PlaceFinder.py is in the same directory
+from PlaceFinder.PlaceFinder import PlaceFinder # Assuming PlaceFinder.py is in the same directory
 import pandas as pd # Import pandas for DataFrame
 from annotated_text import annotated_text # Import annotated_text
 
