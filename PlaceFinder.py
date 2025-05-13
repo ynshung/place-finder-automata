@@ -27,10 +27,6 @@ S_CONNECTING = "CONNECTING"   # In a connecting word (of, the, and)
 # Connecting words that can appear within place names
 CONNECTING_WORDS = {"of", "the", "and", "for"}
 
-# Prepositions that might precede a place name
-PREPOSITIONS = {"in", "on", "at", "to", "from", "with", "by", "near", "towards", "unto"}
-
-
 class PlaceFinder:
     def __init__(self):
         self.current_state = S_START
@@ -137,9 +133,6 @@ class PlaceFinder:
                 self.connecting_buffer += char
                 action = f"Continuing potential connecting/preposition word: '{self.connecting_buffer}'"
             elif is_space_like and self.connecting_buffer:
-                # Check if connecting buffer is a preposition
-                if self.connecting_buffer.lower() in PREPOSITIONS:
-                    action = f"Found preposition '{self.connecting_buffer}', watching for place"
                 self.connecting_buffer = ""
             else:
                 action = f"Ignoring character: '{char}'"                
