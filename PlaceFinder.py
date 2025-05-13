@@ -128,10 +128,10 @@ class PlaceFinder:
                 action = f"Started potential place with capital letter: '{char}'"
             elif char.islower() and not self.connecting_buffer:
                 self.connecting_buffer = char
-                action = f"Potential connecting/preposition word started: '{char}'"
+                action = f"Lowercase word started: '{char}'"
             elif char.islower() and self.connecting_buffer:
                 self.connecting_buffer += char
-                action = f"Continuing potential connecting/preposition word: '{self.connecting_buffer}'"
+                action = f"Continuing lowercase word: '{self.connecting_buffer}'"
             elif is_space_like and self.connecting_buffer:
                 self.connecting_buffer = ""
             else:
