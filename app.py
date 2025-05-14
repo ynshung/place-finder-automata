@@ -151,12 +151,17 @@ if st.button("Find Places"):
 
 st.sidebar.header("How it Works (Simplified)")
 st.sidebar.markdown("""
-- The text is tokenized and tagged for parts of speech (POS).
-- A Deterministic Finite Automaton (DFA) processes these tokens.
-- It looks for capitalized words (Proper Nouns, Nouns) that might be part of a place name.
-- It handles prepositions (e.g., "in", "at") that might precede a place.
-- It allows for connecting words like "of", "the", "and" within place names.
-- Finally, it post-processes candidates to filter out common words or unlikely sequences.
+- A character-based Deterministic Finite Automaton (DFA) then processes the text character by character:
+    - It looks for sequences typically starting with a capital letter, accumulating characters to form words.
+    - It transitions between states like `START`, `CAPITAL` (first capital letter seen), `IN_WORD` (accumulating a word), `SPACE` (after a word), and `CONNECTING` (handling specific connecting words like "of", "the", "and", "for").
+    - When a potential place name sequence is broken (e.g., by punctuation, a non-connecting lowercase word, or end of text), the accumulated words are considered candidates.
+- These raw candidates are then post-processed:
+    - Candidates with repeated words (e.g., "Place Place") are filtered out.
+    - Short candidates (less than 2 characters) are removed.
+    - Single common words (e.g., "The", "Is", months, days) are filtered out if they appear as standalone candidates.
+    - Candidates starting with a common word (unless it's "The" followed by other words) or ending with a connecting word (e.g., "of", "the", "and", "for") are removed.
+    - A final check ensures that the remaining candidates contain at least one significant word that is capitalized and identified by POS tagging as a potential part of a place name (e.g., Proper Noun, Noun).
+- The identified place names are then highlighted in the original text and listed with their counts.
 """)
 
 # To run this app:
