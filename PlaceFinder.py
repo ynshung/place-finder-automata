@@ -1,11 +1,5 @@
-import re
-import nltk
 from nltk import pos_tag
 from nltk.tokenize import word_tokenize, sent_tokenize
-
-# Uncomment to download required NLTK data (run once)
-# nltk.download('punkt')
-# nltk.download('averaged_perceptron_tagger')
 
 # Common words to exclude as standalone place names
 COMMON_WORDS_EXCLUSION_SET = {

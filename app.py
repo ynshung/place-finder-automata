@@ -1,13 +1,12 @@
 import streamlit as st
-from PlaceFinder import PlaceFinder # Assuming PlaceFinder.py is in the same directory
-import pandas as pd # Import pandas for DataFrame
-from annotated_text import annotated_text # Import annotated_text
-import re # Import re for regex replacement
+from PlaceFinder import PlaceFinder
+import pandas as pd
+from annotated_text import annotated_text 
+import re
 
 # Set page config to wide layout
 st.set_page_config(layout="wide")
 
-# Initialize PlaceFinder
 finder = PlaceFinder()
 
 st.title("Place Finder")
@@ -27,13 +26,9 @@ if st.button("Find Places"):
 
         st.header("Results")
         if results:
-            # Add highlighted text section
             st.subheader("Text with Identified Places:")
             
-            # --- New highlighting logic to prevent incorrect nested bolding ---
             potential_highlights = []
-            # Sort place names by length (longest first) to use as a priority metric.
-            # This helps decide which rule wins if multiple rules match the same text span.
             sorted_place_names_for_rules = sorted(results.keys(), key=len, reverse=True)
 
             for place_name_rule in sorted_place_names_for_rules:
@@ -42,49 +37,32 @@ if st.button("Find Places"):
                     potential_highlights.append({
                         'start': match.start(),
                         'end': match.end(),
-                        'text': match.group(0),  # Use text exactly as it appeared in input
-                        'priority': len(place_name_rule) # Length of the rule
+                        'text': match.group(0),
+                        'priority': len(place_name_rule)
                     })
             
-            # Sort all found highlights:
-            # Primary sort key: start index (ascending).
-            # Secondary sort key: priority (length of rule, descending - longest rule wins).
             potential_highlights.sort(key=lambda h: (h['start'], -h['priority']))
             
             actual_highlights = []
             last_highlight_end_pos = -1
             for highlight in potential_highlights:
-                # Add highlight if it dzaoesn't overlap with the previous chosen one
-                # (i.e., it starts at or after the last one ended)
                 if highlight['start'] >= last_highlight_end_pos:
                     actual_highlights.append(highlight)
                     last_highlight_end_pos = highlight['end']
-                # Implicitly, if highlight['start'] < last_highlight_end_pos, it's an overlap.
-                # Because of the sort order (start, -priority), we've already chosen the
-                # "best" (longest rule) highlight for the region starting before or at highlight['start']
-                # that might overlap. So, overlapping shorter/later-in-sort highlights are skipped.
 
-            # actual_highlights is now a list of non-overlapping, highest-priority highlights,
-            # already sorted by start position.
-            
-            # Construct the final text with markdown bolding
             highlighted_parts = []
             current_pos = 0
             for highlight in actual_highlights:
-                # Append text before the current highlight
                 if highlight['start'] > current_pos:
                     highlighted_parts.append(text_input[current_pos:highlight['start']])
                 
-                # Append the bolded place (using original matched text for casing)
                 highlighted_parts.append(f"**{highlight['text']}**")
                 current_pos = highlight['end']
             
-            # Append any remaining text after the last highlight
             if current_pos < len(text_input):
                 highlighted_parts.append(text_input[current_pos:])
             
             highlighted_text = "".join(highlighted_parts)
-            # --- End of new highlighting logic ---
             
             st.markdown(highlighted_text)     
                    
@@ -95,24 +73,21 @@ if st.button("Find Places"):
             st.write("No place candidates found.")
 
         with st.expander("View Part-of-Speech Tags", expanded=True):
-            st.subheader("Part-of-Speech Tags") # Updated subheader
+            st.subheader("Part-of-Speech Tags")
             for i, line_tags in enumerate(pos_tags_lines):
                 if line_tags:
                     elements_for_annotated_text = []
                     for token, tag in line_tags:
-                        # Define symbols that should be plain text
                         if token in ['.', ',', '(', ')', '[', ']', '{', '}', ':', ';', '"', "'", '!', '?', '-', '--']:
                             elements_for_annotated_text.append((token, " ")) 
                         else:
                             # Word and its tag for annotation
                             # Escape '$' to prevent KaTeX interpretation issues
-                            safe_tag = tag.replace('$', '\\$') # Escape backslash for string literal, then escape $ for KaTeX
+                            safe_tag = tag.replace('$', '\\$')
                             elements_for_annotated_text.append((token, safe_tag)) 
                             elements_for_annotated_text.append(" ") 
                     
                     if elements_for_annotated_text:
-                        # Pass all elements as *args to annotated_text
-                        # It will add spaces between them automatically.
                         annotated_text(*elements_for_annotated_text)
                 else:
                     st.write("_Original line was empty or contained no processable tokens._")
@@ -123,17 +98,13 @@ if st.button("Find Places"):
         with st.expander("View DFA State Transitions Log", expanded=True):
             st.subheader("DFA Processing Log")
             
-            # Filter logs for character processing and state changes
-            # Adapt this to match the new log format from character-based DFA
             transition_logs = [
                 log for log in logs 
                 if "char" in log and "prev_state" in log and "new_state" in log and "action" in log
             ]
             
             if transition_logs:
-                # Convert to DataFrame for better display
                 df_transitions = pd.DataFrame(transition_logs)
-                # Select and reorder columns for clarity
                 df_display = df_transitions[["char", "prev_state", "action", "new_state", "buffer", "word_buffer"]]
                 df_display.columns = ["Character", "Previous State", "Action/Details", "New State", "Current Buffer", "Word Buffer"]
                 st.dataframe(df_display, use_container_width=True)
@@ -142,9 +113,6 @@ if st.button("Find Places"):
         
             st.caption("Full Raw Logs (for debugging):")
             st.json(logs)
-        
-        # Remove the old expanders if they are now redundant or re-purpose them
-        # The old "View Processing Logs" and "View Part-of-Speech Tags (by line)" are replaced by the above.
 
     else:
         st.warning("Please enter some text to analyze.")
@@ -163,8 +131,3 @@ st.sidebar.markdown("""
     - A final check ensures that the remaining candidates contain at least one significant word that is capitalized and identified by POS tagging as a potential part of a place name (e.g., Proper Noun, Noun).
 - The identified place names are then highlighted in the original text and listed with their counts.
 """)
-
-# To run this app:
-# 1. Make sure you have streamlit installed: pip install streamlit
-# 2. Navigate to this directory in your terminal.
-# 3. Run: streamlit run app.py
