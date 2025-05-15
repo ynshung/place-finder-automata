@@ -1,5 +1,8 @@
-from nltk import pos_tag
+from nltk import pos_tag, download
 from nltk.tokenize import word_tokenize, sent_tokenize
+
+download('punkt')
+download('averaged_perceptron_tagger')
 
 # Common words to exclude as standalone place names
 COMMON_WORDS_EXCLUSION_SET = {
