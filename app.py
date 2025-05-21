@@ -112,6 +112,12 @@ if st.button("Find Places"):
                 st.write("No detailed DFA transition logs available (or logs are not in the expected format).")
         
             st.caption("Full Raw Logs (for debugging):")
+            st.download_button(
+                label="Download Logs as JSON",
+                data=pd.DataFrame(logs).to_json(orient="records", indent=2),
+                file_name="dfa_logs.json",
+                mime="application/json"
+            )
             st.json(logs)
 
     else:
